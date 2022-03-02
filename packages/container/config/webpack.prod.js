@@ -9,6 +9,7 @@ const prodConfig = {
   mode: 'production',
   output: {
     filename: '[name].[contenthash].js',
+    publicPath: '/container/latest/', // I am syncing s3 of this path with my build. Refer container.yml
   },
   plugins: [
     new ModuleFederationPlugin({

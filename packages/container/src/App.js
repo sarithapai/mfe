@@ -1,15 +1,27 @@
-import React, { lazy, Suspense, useState } from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import Header from './components/Header';
+import { createBrowserHistory } from 'history';
 
 const MarketingLazy = lazy(() => import('./components/MarketingApp'));
 const AuthLazy = lazy(() => import('./components/AuthApp'));
+const DashboardLazy = lazy(() => import('./components/DashboardApp'));
+
+const history = createBrowserHistory();
+/* If BrowserRouter is used then accessing history is difficult hence
+    Router with browserHistory is used here*/
 
 const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
 
+  useEffect(() => {
+    if (isSignedIn) {
+      history.push('/dashboard');
+    }
+  }, [isSignedIn]);
+
   return (
-    <BrowserRouter>
+    <Router history={history}>
       <div>
         <Header
           isSignedIn={isSignedIn}
@@ -26,11 +38,16 @@ const App = () => {
                 }}
               />
             </Route>
+            <Route path='/dashboard'>
+              {!isSignedIn && <Redirect to='/' />}
+              <DashboardLazy />
+            </Route>
+
             <Route path='/' component={MarketingLazy} />
           </Switch>
         </Suspense>
       </div>
-    </BrowserRouter>
+    </Router>
   );
 };
 
